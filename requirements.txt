@@ -1,0 +1,18 @@
+
+# Deep learning framework
+torch==2.11.0
+torchvision==0.26.0
+
+# Numerical computing and data handling
+numpy
+pandas
+
+# Image processing and visualization
+Pillow
+matplotlib
+
+# Model evaluation and classification metrics
+scikit-learn
+
+# Dataset configuration file support
+PyYAML
