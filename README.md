@@ -339,6 +339,95 @@ The augmented ViT had the highest test accuracy in this run. The CNN
 result was much lower. These results apply to this dataset split and
 training setup; they do not establish how the model will perform on
 every crop, farm, or growing condition.
+## Model Comparison and Evaluation Results
+
+This project compares three deep learning models for plant disease recognition using leaf images:
+
+1. A Convolutional Neural Network (CNN) used as the baseline model.
+2. A pretrained Vision Transformer (ViT-B/16) trained with random image augmentation.
+3. A separately trained pretrained Vision Transformer (ViT-B/16) without random image augmentation.
+
+### Test Results
+
+| Model | Test Accuracy |
+|---|---:|
+| CNN baseline | 17.84% |
+| ViT with random augmentation | 61.45% |
+| ViT without random augmentation | 53.96% |
+
+The ViT trained with random image augmentation achieved the highest test accuracy at 61.45%. This was 43.61 percentage points higher than the CNN baseline and 7.49 percentage points higher than the ViT trained without random augmentation.
+
+The notebook also evaluates precision, recall, and F1-score to provide a broader view of classification performance.
+
+| Evaluation Metric | CNN Baseline | ViT with Augmentation | ViT without Augmentation |
+|---|---:|---:|---:|
+| Macro Precision | 0.111 | 0.615 | 0.550 |
+| Macro Recall | 0.148 | 0.620 | 0.548 |
+| Macro F1-score | 0.103 | 0.595 | 0.520 |
+| Weighted Precision | 0.146 | 0.652 | 0.574 |
+| Weighted Recall | 0.178 | 0.615 | 0.540 |
+| Weighted F1-score | 0.137 | 0.607 | 0.528 |
+
+These results show that the ViT models performed better than the CNN baseline in this experiment. However, performance varied across plant disease classes, and some classes remained difficult to identify correctly.
+
+The augmentation experiment should be interpreted carefully. The two ViT models were trained separately, so differences in their results may reflect random initialization and training variation as well as the use of augmentation.
+
+## Attention Heatmaps and Failure Analysis
+
+### Attention Heatmaps
+
+The notebook implements attention rollout to examine where the Vision Transformer directs attention in an image. It combines attention information from transformer layers and maps the resulting values onto the input image to create a heatmap.
+
+To generate attention heatmaps:
+
+1. Open the project notebook in Google Colab.
+2. Upload the PlantDoc dataset and run the notebook cells in order.
+3. Complete the model training or load the saved ViT checkpoint, if available.
+4. Run the **Implement attention rollout** section.
+5. Inspect the generated heatmaps and image overlays.
+
+The heatmaps provide a visual aid for examining model predictions. They should not be treated as proof that the highlighted regions fully explain the model's decision.
+
+### Failure Analysis
+
+The notebook examines incorrect predictions made by the ViT model on the test set. This analysis helps identify classes that may be visually similar or difficult for the model to distinguish.
+
+The test set contains 454 images. The model classified 279 images correctly and 175 incorrectly, resulting in a test accuracy of 61.45%.
+
+The failure-analysis table records the test image index, true class ID, predicted class ID, prediction confidence, and whether the prediction was correct.
+
+#### Examples of Misclassified Predictions
+
+| Test Index | True Class ID | Predicted Class ID | Prediction Confidence |
+|---:|---:|---:|---:|
+| 245 | 24 | 25 | 0.9978 |
+| 33 | 12 | 13 | 0.9978 |
+| 82 | 15 | 14 | 0.9974 |
+| 83 | 15 | 14 | 0.9971 |
+| 84 | 15 | 14 | 0.9959 |
+| 81 | 15 | 10 | 0.9878 |
+
+All six predictions shown above were incorrect. In particular, class 15 was repeatedly predicted as class 14, suggesting that these classes may be difficult for the model to distinguish.
+
+The examples also show that high prediction confidence does not guarantee a correct classification. Therefore, confidence values should be considered alongside actual predictions and evaluation metrics.
+
+#### How to Generate Failure-Analysis Outputs
+
+1. Run the data preparation and model evaluation cells in the notebook.
+2. Execute the **failure-analysis** section.
+3. Review the generated misclassification table and selected image examples.
+4. Examine the CSV file and attention-analysis visualization.
+
+The notebook saves the failure-analysis outputs under `/content/failure_analysis/` in Google Colab:
+
+- `misclassified_predictions.csv` — contains the recorded misclassified predictions.
+- `misclassified_attention_analysis.png` — visualizes selected misclassified examples for further inspection.
+
+Files saved under `/content/` are temporary and may be lost when the Colab runtime is reset. Download these files or copy them to Google Drive if you want to preserve them.
+
+### Limitations
+
+This project has several limitations. The test accuracy indicates that the model still makes a substantial number of incorrect predictions. Visually similar disease classes may be difficult to distinguish, and high-confidence errors can occur. Attention heatmaps support visual inspection but do not establish the exact reasoning behind a prediction. The model should therefore be treated as an experimental classification tool rather than a replacement for expert plant disease diagnosis.
 
 ## Important notes about rerunning
 
